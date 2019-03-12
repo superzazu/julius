@@ -74,7 +74,7 @@ static void handler(int sig) {
     exit(1);
 }
 
-#if defined(_WIN32) || defined(__vita__)
+#if defined(_WIN32) || defined(__vita__) || defined(__APPLE__)
 /* Log to separate file on windows, since we don't have a console there */
 static FILE *log_file = 0;
 
