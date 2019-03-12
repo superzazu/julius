@@ -94,7 +94,27 @@ static void write_log(void *userdata, int category, SDL_LogPriority priority, co
 
 static void setup_logging(void)
 {
-    log_file = file_open("julius-log.txt", "w");
+    char* log_file_path = "julius-log.txt";
+
+    // on macOS, we write to the "pref path", which is a writable directory
+    #if __APPLE__
+    const char *pref_path = SDL_GetPrefPath("bvschaik", "julius");
+    char *new_path = NULL;
+    if (pref_path) {
+        new_path = malloc(2 * FILE_NAME_MAX * sizeof(char));
+        snprintf(new_path, 2 * FILE_NAME_MAX * sizeof(char), "%s%s",
+            pref_path, log_file_path);
+        log_file_path = new_path;
+        SDL_free((void*) pref_path);
+    }
+    #endif
+
+    log_file = file_open(log_file_path, "w");
+
+    #if __APPLE__
+    SDL_free(new_path);
+    #endif
+
     SDL_LogSetOutputFunction(write_log, NULL);
 }
 
